@@ -1,0 +1,66 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Apple Design System — from DESIGN.md */
+  --color-action-blue: #0071e3;
+  --color-link-blue: #0066cc;
+  --color-highlight-blue: #2997ff;
+  --color-black: #000000;
+  --color-pale-gray: #f5f5f7;
+  --color-near-black: #1d1d1f;
+  --color-secondary-gray: #6e6e73;
+  --color-soft-border: #d2d2d7;
+  --color-mid-border: #86868b;
+  --color-white: #ffffff;
+  --color-graphite-a: #272729;
+
+  /* Sidebar — adapted Apple dark surface */
+  --sidebar-bg: #1a2332;
+  --sidebar-hover-bg: #243347;
+  --sidebar-active-bg: var(--color-action-blue);
+  --sidebar-text: #8a9bbc;
+  --sidebar-text-active: #ffffff;
+  --sidebar-width: 220px;
+  --sidebar-collapsed-width: 62px;
+
+  /* Typography */
+  --font: -apple-system, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Border radius scale — DESIGN.md §5 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  /* Spacing (8px grid) */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 20px;
+  --s6: 24px;
+}
+
+html, body, #app {
+  height: 100%;
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-near-black);
+  background: var(--color-pale-gray);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, select, input {
+  font-family: inherit;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-soft-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-mid-border); }
