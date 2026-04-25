@@ -135,6 +135,22 @@ export function useRevenueData(fromRef, toRef) {
     return Object.values(map).sort((a, b) => b.total - a.total)
   })
 
+  // SAT / IELTS order counts (loaiHinh=KH, chiTietMonHoc=SAT|IELTS, grouped by phanLoai)
+  const satIeltsOrders = computed(() => {
+    const result = {
+      SAT:   { dkm: 0, ht: 0 },
+      IELTS: { dkm: 0, ht: 0 },
+    }
+    filtered.value.forEach((r) => {
+      if (r.loaiHinh !== 'KH') return
+      const mon = r.chiTietMonHoc
+      if (mon !== 'SAT' && mon !== 'IELTS') return
+      if (r.phanLoai === 'Đăng ký mới') result[mon].dkm++
+      else if (r.phanLoai === 'Hoàn thiện') result[mon].ht++
+    })
+    return result
+  })
+
   // Revenue by data source
   const revBySource = computed(() => {
     const map = {}
@@ -268,5 +284,5 @@ export function useRevenueData(fromRef, toRef) {
     })
   })
 
-  return { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource, saleAnalysis, activeSalesByMonth, byMonth }
+  return { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource, satIeltsOrders, saleAnalysis, activeSalesByMonth, byMonth }
 }

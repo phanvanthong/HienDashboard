@@ -77,6 +77,13 @@ export const COLUMN_DEFS = [
     optional: true,
   },
   {
+    excel: 'Chi tiết môn học',
+    field: 'chiTietMonHoc',
+    type: 'string',
+    charts: ['Số lượng đơn hàng SAT, IELTS'],
+    optional: true,
+  },
+  {
     excel: 'Phân loại nguồn data',
     field: 'nguon',
     type: 'string',

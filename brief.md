@@ -1,3 +1,9 @@
+<!-- chỗ biểu đồ Doanh thu theo nguồn data sửa lại thành 2 biểu đồ như ảnh cho t.   
+  biểu đồ Số lượng đơn hành SAT, IELTS lấy dữ liệu có cột "Loại hình" là "KH" và cột "Chi      tiết môn học" là "SAT" hoặc "IELTS" và đếm xem ở mỗi "SAT", "IELTS" có bao nhiều cột "
+  Phân loại học sinh chuẩn " có dữ liệu là " Đăng ký mới " và " Hoàn thiện " mỗi bar thì "
+  Hoàn thiện " bên dưới và " Đăng ký mới " bên trên. cập nhật cách lấy dữ liệu vào file
+  brief nữa nhé -->
+
 Báo cáo doanh thu:
 
 * Có 8 loại hình:
@@ -38,14 +44,13 @@ Báo cáo doanh thu:
    Subtitle: "Doanh thu: DT thực tế, CN"
 
 ## Dòng 2 (Row 2):
-- Tổng số lượng đơn hàng từng loại hình dịch vụ:
- + Có 8 loại hình
- + Là biểu đồ cột xếp chồng: có 2 loại  'Đăng ký mới' bên dưới, 'Hoàn thiện' bên trên
- + Lấy các bản ghi có cột 'Phân loại học sinh chuẩn' là các dữ liệu :  Đăng ký mới, Hoàn thiện
- + Tổng số lượng những bản ghi cùng 'Phân loại học sinh chuẩn' và 'Loại hình' trong khoảng thời gian đã lọc 
- + Ghi rõ số lượng của từng loại vào từng cột luôn, số của từng loại và số tổng.
- + Dữ liệu các bản ghi lấy lên báo cáo có các cột 'Tháng ghi nhận doanh thu', 'Năm ghi nhận doanh thu' trong khoảng thời gian Date_Filter đã lọc ở trên.
- + Subtitle: "Số đơn hàng: Theo đăng ký mới và hoàn thiện"
+- Số lượng đơn hàng SAT, IELTS:
+ + Biểu đồ cột xếp chồng, 2 cột: SAT và IELTS
+ + Lọc bản ghi: cột 'Loại hình' = 'KH' VÀ cột 'Chi tiết môn học' = 'SAT' hoặc 'IELTS'
+ + Đếm số bản ghi theo 'Phân loại học sinh chuẩn': 'Hoàn thiện' bên dưới, 'Đăng ký mới' bên trên
+ + Ghi rõ số lượng từng loại bên trong từng phần cột và số tổng trên đỉnh mỗi cột
+ + Dữ liệu lọc theo Date_Filter ('Tháng ghi nhận doanh thu', 'Năm ghi nhận doanh thu')
+ + Subtitle: "Số đơn hàng: Loại hình KH, Chi tiết môn học"
 
 - Tổng doanh thu từng team:
  + có combobox chọn loại: Team, Chi nhánh

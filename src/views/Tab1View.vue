@@ -13,9 +13,10 @@
       </div>
     </div>
 
-    <!-- Row 2: Orders by category (left) + Revenue by source (right) -->
+    <!-- Row 2: Orders by category (50%) + SAT/IELTS (25%) + Revenue by source (25%) -->
     <div class="row-mid">
       <OrdersByCategoryChart :revByCategory="revByCategory" />
+      <SatIeltsOrdersChart   :satIeltsOrders="satIeltsOrders" />
       <RevenueBySourceChart  :revBySource="revBySource" />
     </div>
 
@@ -34,6 +35,7 @@ import KpiSummaryCard        from '../components/tab1/KpiSummaryCard.vue'
 import RevenueRatioChart     from '../components/tab1/RevenueRatioChart.vue'
 import RevenueByCNChart      from '../components/tab1/RevenueByCNChart.vue'
 import OrdersByCategoryChart from '../components/tab1/OrdersByCategoryChart.vue'
+import SatIeltsOrdersChart   from '../components/tab1/SatIeltsOrdersChart.vue'
 import RevenueBySourceChart  from '../components/tab1/RevenueBySourceChart.vue'
 import RevenueByTeamChart    from '../components/tab1/RevenueByTeamChart.vue'
 import SaleRankingTable      from '../components/tab1/SaleRankingTable.vue'
@@ -45,7 +47,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:count'])
 
-const { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource } =
+const { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource, satIeltsOrders } =
   useRevenueData(toRef(props, 'appliedFrom'), toRef(props, 'appliedTo'))
 
 watch(() => filtered.value.length, n => emit('update:count', n), { immediate: true })
@@ -78,10 +80,10 @@ watch(() => filtered.value.length, n => emit('update:count', n), { immediate: tr
   min-height: 120px !important;
 }
 
-/* Row 2 */
+/* Row 2: OrdersByCategory (50%) + SAT/IELTS (25%) + BySource (25%) */
 .row-mid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr;
   gap: 12px;
 }
 
