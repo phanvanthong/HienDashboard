@@ -1,6 +1,6 @@
-<!-- Chart 2: Tỷ lệ doanh thu từng loại hình (donut) -->
+<!-- Doanh thu từng loại hình (donut) - hiện cả số tiền và % -->
 <template>
-  <ChartCard title="Tỷ lệ doanh thu từng loại hình" subtitle="Tỷ lệ doanh thu: DT sau quà tặng" :height="290">
+  <ChartCard title="Doanh thu từng loại hình" subtitle="Doanh thu: DT sau quà tặng, Loại hình" :height="230">
     <div class="donut-layout">
       <div class="donut-wrap">
         <Doughnut :data="chartData" :options="chartOptions" :plugins="[centerPlugin]" />
@@ -9,7 +9,7 @@
         <div v-for="(item, i) in legendItems" :key="i" class="legend-row">
           <span class="dot" :style="{ background: item.color }"></span>
           <span class="lbl">{{ item.label }}</span>
-          <span class="pct">{{ item.pct }}%</span>
+          <span class="val-pct">{{ fmtShort(item.rawVal) }} — {{ item.pct }}%</span>
         </div>
       </div>
     </div>
@@ -21,6 +21,7 @@ import { computed } from 'vue'
 import { Doughnut } from 'vue-chartjs'
 import ChartCard from './ChartCard.vue'
 import { LOAI_HINH, LOAI_LABEL, LOAI_COLORS } from '../../composables/useRevenueData.js'
+import { fmtVND, fmtShort } from '../../utils/formatters.js'
 
 const props = defineProps({ totalRevenue: Object })
 
@@ -50,7 +51,7 @@ const legendItems = computed(() =>
   LOAI_HINH.map((l) => {
     const val = props.totalRevenue?.[l]?.dtSauQua || 0
     const pct = totalSum.value > 0 ? ((val / totalSum.value) * 100).toFixed(1) : '0.0'
-    return { label: LOAI_LABEL[l], color: LOAI_COLORS[l], pct }
+    return { label: LOAI_LABEL[l], color: LOAI_COLORS[l], pct, rawVal: val }
   }).filter((i) => parseFloat(i.pct) > 0)
 )
 
@@ -79,7 +80,7 @@ const chartOptions = computed(() => ({
       callbacks: {
         label: (c) => {
           const pct = totalSum.value > 0 ? ((c.raw / totalSum.value) * 100).toFixed(1) : 0
-          return ` ${pct}%`
+          return ` ${fmtVND(c.raw)} (${pct}%)`
         },
       },
     },
@@ -89,10 +90,10 @@ const chartOptions = computed(() => ({
 
 <style scoped>
 .donut-layout { display: flex; align-items: center; gap: 16px; height: 100%; }
-.donut-wrap { width: 160px; height: 160px; flex-shrink: 0; }
-.legend { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-.legend-row { display: flex; align-items: center; gap: 6px; font-size: 12px; }
-.dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.lbl { flex: 1; color: var(--color-near-black); }
-.pct { font-weight: 600; color: var(--color-near-black); min-width: 40px; text-align: right; }
+.donut-wrap   { width: 130px; height: 130px; flex-shrink: 0; }
+.legend       { flex: 1; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; }
+.legend-row   { display: flex; align-items: center; gap: 6px; font-size: 11.5px; }
+.dot          { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.lbl          { flex: 1; color: var(--color-near-black); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.val-pct      { font-weight: 600; color: var(--color-near-black); white-space: nowrap; flex-shrink: 0; }
 </style>

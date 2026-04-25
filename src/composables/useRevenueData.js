@@ -99,6 +99,21 @@ export function useRevenueData(fromRef, toRef) {
     return Object.entries(map).sort((a, b) => b[1] - a[1])
   })
 
+  // dtThucTe by CN (for Doanh thu theo chi nhánh donut)
+  const revByCNDtThucTe = computed(() => {
+    const map = {}
+    filtered.value.forEach((r) => {
+      const key = r.cn || 'N/A'
+      map[key] = (map[key] || 0) + (r.dtThucTe || 0)
+    })
+    return Object.entries(map).sort((a, b) => b[1] - a[1])
+  })
+
+  // Total dtThucTe across all records
+  const totalDtThucTe = computed(() =>
+    filtered.value.reduce((s, r) => s + (r.dtThucTe || 0), 0)
+  )
+
   // Sale ranking
   const saleRanking = computed(() => {
     const map = {}
@@ -253,5 +268,5 @@ export function useRevenueData(fromRef, toRef) {
     })
   })
 
-  return { filtered, totalRevenue, revByCategory, revByTeam, revByCN, saleRanking, revBySource, saleAnalysis, activeSalesByMonth, byMonth }
+  return { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource, saleAnalysis, activeSalesByMonth, byMonth }
 }

@@ -20,31 +20,24 @@ Báo cáo doanh thu:
 
 # Tab1:
 * Ở Tab1 chỗ lọc Tất cả đơn vị sửa thành 2 ô datebox lọc (đặt tên là Date_Filter cho các lần nhắc sau) trong khoảng thời gian từ tháng đến tháng.
-* Yêu cầu: 8 biểu đồ trên 1 dashboard tùy chọn loại biểu đồ phù hợp với từng loại dữ liệu. Mỗi biểu đồ chia thành các loại hình như đã nêu ở trên gồm 8 loại hình. 
-- Tổng doanh thu:
- + Có 8 loại hình
- + Là biểu đồ cột xếp chồng 
- + Có 2 loại trong 1 cột:  'Quà Tặng',  'Doanh thu sau quà tặng'
- + Tổng Dữ liệu theo cột 'Quà Tặng',  'Doanh thu sau quà tặng' theo từng 'Loại hình' trong khoảng thời gian đã lọc
- + Dữ liệu các bản ghi lấy lên báo cáo có các cột 'Tháng ghi nhận doanh thu', 'Năm ghi nhận doanh thu' trong khoảng thời gian Date_Filter đã lọc ở trên.
- + Subtitle: "Tổng doanh thu: Quà tặng, DT sau quà tặng"
+* Layout 3 dòng, mỗi dòng 2 cột.
 
-- Tỷ lệ doanh thu từng loại hình:
- + Có 8 loại hình
- + Mỗi loại hình chiếm bao nhiêu % trong tổng doanh thu
- + % Tổng của cột 'Tháng ghi nhận doanh thu' theo từng 'Loại hình'  trong khoảng thời gian đã lọc
- + Dữ liệu các bản ghi lấy lên báo cáo có các cột 'Tháng ghi nhận doanh thu', 'Năm ghi nhận doanh thu' trong khoảng thời gian Date_Filter đã lọc ở trên.
- + Subtitle: "Tỷ lệ doanh thu: DT sau quà tặng"
+## Dòng 1 (Row 1):
+- Cột trái: Card KPI tổng hợp 5 chỉ số:
+ + Tổng doanh thu: tổng cột 'Doanh thu thực tế'
+ + Tổng quà tặng: tổng cột 'Quà Tặng'
+ + DT sau quà tặng: tổng cột 'Doanh thu sau quà tặng'
+ + Số lượng đơn hàng mới: tổng count_dkm từ biểu đồ Số lượng đơn hàng theo phân loại học sinh (cột 'Phân loại học sinh chuẩn' = 'Đăng ký mới')
+ + Số lượng đơn hàng hoàn thiện: tổng count_ht (cột 'Phân loại học sinh chuẩn' = 'Hoàn thiện')
+ + Ring chỉ báo: dtSauQua / dtThucTe * 100%
 
-- Tổng doanh thu từng loại hình dịch vụ:
- + Có 8 loại hình
- + Là biểu đồ cột xếp chồng: có 2 loại  'Đăng ký mới' bên dưới, 'Hoàn thiện' bên trên
- + Lấy các bản ghi có cột 'Phân loại học sinh' là các dữ liệu :  Đăng ký mới, Hoàn thiện
- + Tổng doanh thu cột 'Doanh thu thực tế' gom những dữ liệu cùng 'Phân loại học sinh' và 'Loại hình' trong khoảng thời gian đã lọc 
- + Ghi rõ doanh thu của từng loại vào từng cột luôn, số của từng loại và số tổng.
- + Dữ liệu các bản ghi lấy lên báo cáo có các cột 'Tháng ghi nhận doanh thu', 'Năm ghi nhận doanh thu' trong khoảng thời gian Date_Filter đã lọc ở trên.
- + Subtitle: "Doanh thu: DT thực tế, Phân loại"
+- Cột phải: 2 biểu đồ donut cạnh nhau:
+ + Doanh thu từng loại hình: biểu đồ donut theo 8 loại hình, hiển thị cả số tiền và % trong legend + tooltip. Dữ liệu: tổng 'Doanh thu sau quà tặng' theo 'Loại hình'.
+   Subtitle: "Doanh thu: DT sau quà tặng, Loại hình"
+ + Doanh thu theo chi nhánh: biểu đồ donut, tổng cột 'Doanh thu thực tế' theo từng chi nhánh ở cột 'CN'. Hiển thị số tiền và % trong legend + tooltip.
+   Subtitle: "Doanh thu: DT thực tế, CN"
 
+## Dòng 2 (Row 2):
 - Tổng số lượng đơn hàng từng loại hình dịch vụ:
  + Có 8 loại hình
  + Là biểu đồ cột xếp chồng: có 2 loại  'Đăng ký mới' bên dưới, 'Hoàn thiện' bên trên

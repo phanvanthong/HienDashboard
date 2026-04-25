@@ -1,22 +1,28 @@
 <template>
   <div class="tab1">
-    <!-- Row 1: Tổng DT (span 2) + 2 donut (mỗi cái 1 cột) -->
-    <div class="row-top">
-      <TotalRevenueChart class="span2" :totalRevenue="totalRevenue" />
-      <RevenueRatioChart :totalRevenue="totalRevenue" />
-      <RevenueBySourceChart :revBySource="revBySource" />
+    <!-- Row 1: KPI cards (left 50%) + 2 donuts (right 50%) -->
+    <div class="row-1">
+      <KpiSummaryCard
+        :totalDtThucTe="totalDtThucTe"
+        :totalRevenue="totalRevenue"
+        :revByCategory="revByCategory"
+      />
+      <div class="donut-pair">
+        <RevenueRatioChart :totalRevenue="totalRevenue" />
+        <RevenueByCNChart  :revByCNDtThucTe="revByCNDtThucTe" />
+      </div>
     </div>
 
-    <!-- Row 2: 2 biểu đồ danh mục -->
+    <!-- Row 2: Orders by category (left) + Revenue by source (right) -->
     <div class="row-mid">
-      <RevenueByCategoryChart :revByCategory="revByCategory" />
-      <OrdersByCategoryChart  :revByCategory="revByCategory" />
+      <OrdersByCategoryChart :revByCategory="revByCategory" />
+      <RevenueBySourceChart  :revBySource="revBySource" />
     </div>
 
-    <!-- Row 3: Team/CN + Bảng xếp hạng -->
+    <!-- Row 3: Team/CN bar + Sale ranking -->
     <div class="row-bot">
       <RevenueByTeamChart :revByTeam="revByTeam" :revByCN="revByCN" />
-      <SaleRankingTable :saleRanking="saleRanking" />
+      <SaleRankingTable   :saleRanking="saleRanking" />
     </div>
   </div>
 </template>
@@ -24,13 +30,13 @@
 <script setup>
 import { toRef, watch } from 'vue'
 import { useRevenueData } from '../composables/useRevenueData.js'
-import TotalRevenueChart      from '../components/tab1/TotalRevenueChart.vue'
-import RevenueRatioChart      from '../components/tab1/RevenueRatioChart.vue'
-import RevenueByCategoryChart from '../components/tab1/RevenueByCategoryChart.vue'
-import OrdersByCategoryChart  from '../components/tab1/OrdersByCategoryChart.vue'
-import RevenueByTeamChart     from '../components/tab1/RevenueByTeamChart.vue'
-import RevenueBySourceChart   from '../components/tab1/RevenueBySourceChart.vue'
-import SaleRankingTable       from '../components/tab1/SaleRankingTable.vue'
+import KpiSummaryCard        from '../components/tab1/KpiSummaryCard.vue'
+import RevenueRatioChart     from '../components/tab1/RevenueRatioChart.vue'
+import RevenueByCNChart      from '../components/tab1/RevenueByCNChart.vue'
+import OrdersByCategoryChart from '../components/tab1/OrdersByCategoryChart.vue'
+import RevenueBySourceChart  from '../components/tab1/RevenueBySourceChart.vue'
+import RevenueByTeamChart    from '../components/tab1/RevenueByTeamChart.vue'
+import SaleRankingTable      from '../components/tab1/SaleRankingTable.vue'
 
 const props = defineProps({
   appliedFrom: { type: String, default: '2023-07' },
@@ -39,7 +45,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:count'])
 
-const { filtered, totalRevenue, revByCategory, revByTeam, revByCN, saleRanking, revBySource } =
+const { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource } =
   useRevenueData(toRef(props, 'appliedFrom'), toRef(props, 'appliedTo'))
 
 watch(() => filtered.value.length, n => emit('update:count', n), { immediate: true })
@@ -52,23 +58,27 @@ watch(() => filtered.value.length, n => emit('update:count', n), { immediate: tr
   gap: 12px;
 }
 
-/* Row 1: 4 cột đều nhau, chart đầu span 2 */
-.row-top {
+/* Row 1: equal halves */
+.row-1 {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  min-height: calc(33vh - 40px);
+}
+
+/* Right half of row 1: 2 donuts side by side */
+.donut-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.row-top .span2 {
-  grid-column: span 2;
-}
-
-.row-top :deep(.chart-body) {
+.donut-pair :deep(.chart-body) {
   height: calc(33vh - 140px) !important;
-  min-height: 130px !important;
+  min-height: 120px !important;
 }
 
-/* Row 2: 2 biểu đồ danh mục */
+/* Row 2 */
 .row-mid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -80,7 +90,7 @@ watch(() => filtered.value.length, n => emit('update:count', n), { immediate: tr
   min-height: 120px !important;
 }
 
-/* Row 3: team + bảng */
+/* Row 3 */
 .row-bot {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -98,12 +108,12 @@ watch(() => filtered.value.length, n => emit('update:count', n), { immediate: tr
 }
 
 @media (max-width: 1100px) {
-  .row-top { grid-template-columns: 1fr 1fr; }
-  .row-top .span2 { grid-column: 1 / -1; }
+  .row-1 { grid-template-columns: 1fr; }
+  .donut-pair { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 800px) {
-  .row-top, .row-mid, .row-bot { grid-template-columns: 1fr; }
-  .row-top .span2 { grid-column: auto; }
+  .row-1, .row-mid, .row-bot { grid-template-columns: 1fr; }
+  .donut-pair { grid-template-columns: 1fr; }
 }
 </style>
