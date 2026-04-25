@@ -12,7 +12,7 @@ import { ref } from 'vue'
 import AppSidebar from './components/AppSidebar.vue'
 import DashboardView from './views/DashboardView.vue'
 
-const sidebarCollapsed = ref(false)
+const sidebarCollapsed = ref(true)
 </script>
 
 <style scoped>

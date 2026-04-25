@@ -10,7 +10,7 @@
         <thead>
           <tr>
             <th class="th-center">STT</th>
-            <th>Mã NV</th>
+            <th class="th-code">Mã NV</th>
             <th>Tên Sale</th>
             <th class="th-right">Tổng DT</th>
             <th class="th-right">Du học</th>
@@ -105,6 +105,7 @@ thead th {
 }
 
 .th-center { text-align: center; }
+.th-code   { width: 72px; max-width: 72px; }
 .th-right  { text-align: right; }
 
 tbody tr {
@@ -123,7 +124,7 @@ td {
 .td-center { text-align: center; }
 .td-right  { text-align: right; }
 .td-bold   { font-weight: 600; }
-.td-code   { font-family: monospace; font-size: 12px; color: var(--color-secondary-gray); }
+.td-code   { font-family: monospace; font-size: 12px; color: var(--color-secondary-gray); width: 72px; max-width: 72px; }
 .td-empty  { text-align: center; color: var(--color-secondary-gray); padding: 24px; }
 
 .rank-badge {

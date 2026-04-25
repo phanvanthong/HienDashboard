@@ -1,6 +1,6 @@
 <!-- Chart 2: Tỷ lệ doanh thu từng loại hình (donut) -->
 <template>
-  <ChartCard title="Tỷ lệ doanh thu từng loại hình" :height="290">
+  <ChartCard title="Tỷ lệ doanh thu từng loại hình" subtitle="Tỷ lệ doanh thu: DT sau quà tặng" :height="290">
     <div class="donut-layout">
       <div class="donut-wrap">
         <Doughnut :data="chartData" :options="chartOptions" :plugins="[centerPlugin]" />

@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import rawData from '../data/revenue.json'
+import { revenueData } from '../store/dataStore.js'
 
 export const LOAI_HINH = ['DH', 'KH', 'Kids', 'Debate', 'NK', 'Công nghệ', 'Camp', 'Commission']
 
@@ -37,12 +37,12 @@ export function useRevenueData(fromRef, toRef) {
   const filtered = computed(() => {
     const from = fromRef.value
     const to = toRef.value
-    if (!from || !to) return rawData
+    if (!from || !to) return revenueData.value
 
     const [fy, fm] = from.split('-').map(Number)
     const [ty, tm] = to.split('-').map(Number)
 
-    return rawData.filter((r) => {
+    return revenueData.value.filter((r) => {
       if (!r.thang) return false
       const ym = (r.nam || 2024) * 12 + r.thang
       return ym >= fy * 12 + fm && ym <= ty * 12 + tm
@@ -61,7 +61,9 @@ export function useRevenueData(fromRef, toRef) {
     return map
   })
 
-  // Aggregate by phanLoai (Đăng ký mới / Hoàn thiện) × loại hình
+  // Aggregate by phanLoai × loại hình
+  // Revenue (dtThucTe) groups by 'Phân loại học sinh' (phanLoaiHS)
+  // Order counts group by 'Phân loại học sinh chuẩn' (phanLoai)
   const revByCategory = computed(() => {
     const TYPES = ['Đăng ký mới', 'Hoàn thiện']
     const map = {}
@@ -70,8 +72,8 @@ export function useRevenueData(fromRef, toRef) {
     })
     filtered.value.forEach((r) => {
       const l = normalizeLoai(r.loaiHinh)
-      if (!l || !TYPES.includes(r.phanLoai)) return
-      map[l][r.phanLoai] += r.dtThucTe || 0
+      if (!l) return
+      if (TYPES.includes(r.phanLoaiHS)) map[l][r.phanLoaiHS] += r.dtThucTe || 0
       if (r.phanLoai === 'Đăng ký mới') map[l].count_dkm++
       else if (r.phanLoai === 'Hoàn thiện') map[l].count_ht++
     })
@@ -165,5 +167,91 @@ export function useRevenueData(fromRef, toRef) {
       .map(([month, sales]) => ({ month, count: sales.size }))
   })
 
-  return { filtered, totalRevenue, revByCategory, revByTeam, revByCN, saleRanking, revBySource, saleAnalysis, activeSalesByMonth }
+  // byMonth: aggregate per calendar month for Tab2 monthly charts
+  const byMonth = computed(() => {
+    const from = fromRef.value
+    const to   = toRef.value
+    if (!from || !to) return []
+
+    // Compute top5 teams and top5 CN over entire filtered dataset
+    const teamTotals = {}
+    const cnTotals = {}
+    filtered.value.forEach((r) => {
+      const t = r.team || 'N/A'
+      teamTotals[t] = (teamTotals[t] || 0) + (r.dtSauQua || 0)
+      const c = r.cn || 'N/A'
+      cnTotals[c] = (cnTotals[c] || 0) + (r.dtSauQua || 0)
+    })
+    const top5Teams = new Set(
+      Object.entries(teamTotals).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k]) => k)
+    )
+    const top5CN = new Set(
+      Object.entries(cnTotals).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k]) => k)
+    )
+    const teamKeys = [...top5Teams, 'Khác']
+    const cnKeys   = [...top5CN,   'Khác']
+
+    // Generate ALL months in the filter range (even empty ones)
+    const [fy, fm] = from.split('-').map(Number)
+    const [ty, tm] = to.split('-').map(Number)
+    const allMonths = []
+    let y = fy, mo = fm
+    while (y < ty || (y === ty && mo <= tm)) {
+      const key = `${y}-${String(mo).padStart(2, '0')}`
+      allMonths.push(key)
+      mo++
+      if (mo > 12) { mo = 1; y++ }
+    }
+
+    // Build empty buckets for every month in range
+    const monthMap = {}
+    allMonths.forEach((key) => {
+      monthMap[key] = {
+        month: key,
+        dtSauQua: 0, quaTang: 0, dtThucTe: 0,
+        donHang: 0, dkm: 0, ht: 0, donDkm: 0, donHt: 0,
+        byLoai:      Object.fromEntries(LOAI_HINH.map((l) => [l, 0])),
+        byLoaiCount: Object.fromEntries(LOAI_HINH.map((l) => [l, 0])),
+        byTeam: Object.fromEntries(teamKeys.map((k) => [k, 0])),
+        byCN:   Object.fromEntries(cnKeys.map((k) => [k, 0])),
+        _sales: new Set(),
+      }
+    })
+
+    // Fill in data
+    filtered.value.forEach((r) => {
+      if (!r.thang) return
+      const key = `${r.nam || 2024}-${String(r.thang).padStart(2, '0')}`
+      const m = monthMap[key]
+      if (!m) return
+      m.dtSauQua += r.dtSauQua || 0
+      m.quaTang  += r.quaTang  || 0
+      m.dtThucTe += r.dtThucTe || 0
+      m.donHang  += 1
+      if (r.phanLoaiHS === 'Đăng ký mới') m.dkm += r.dtThucTe || 0
+      if (r.phanLoaiHS === 'Hoàn thiện')  m.ht  += r.dtThucTe || 0
+      if (r.phanLoai  === 'Đăng ký mới') m.donDkm += 1
+      if (r.phanLoai  === 'Hoàn thiện')  m.donHt  += 1
+
+      const l = normalizeLoai(r.loaiHinh)
+      if (l) { m.byLoai[l] += r.dtSauQua || 0; m.byLoaiCount[l] += 1 }
+
+      const teamBucket = top5Teams.has(r.team || 'N/A') ? (r.team || 'N/A') : 'Khác'
+      m.byTeam[teamBucket] += r.dtSauQua || 0
+
+      const cnBucket = top5CN.has(r.cn || 'N/A') ? (r.cn || 'N/A') : 'Khác'
+      m.byCN[cnBucket] += r.dtSauQua || 0
+
+      if (r.sale) m._sales.add(r.sale)
+    })
+
+    return allMonths.map((key) => {
+      const m = monthMap[key]
+      const [yr, mon] = key.split('-').map(Number)
+      const { _sales, ...rest } = m
+      return { ...rest, label: `Th${mon}/${String(yr).slice(2)}`, activeSales: _sales.size }
+    })
+  })
+
+  return { filtered, totalRevenue, revByCategory, revByTeam, revByCN, saleRanking, revBySource, saleAnalysis, activeSalesByMonth, byMonth }
 }

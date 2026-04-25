@@ -1,6 +1,6 @@
 <!-- Chart 7: Doanh thu theo nguồn data (donut) -->
 <template>
-  <ChartCard title="Doanh thu theo nguồn data" subtitle="Tổng doanh thu thực tế · Phân loại nguồn" :height="290">
+  <ChartCard title="Doanh thu theo nguồn data" subtitle="Doanh thu: DT thực tế, Nguồn" :height="290">
     <div class="donut-layout">
       <div class="donut-wrap">
         <Doughnut :data="chartData" :options="chartOptions" />
