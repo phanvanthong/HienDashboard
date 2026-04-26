@@ -130,7 +130,7 @@ const chartOptions = computed(() => ({
 </script>
 
 <style scoped>
-.chart-legend { display: flex; align-items: center; gap: 12px; flex-shrink: 0; flex-wrap: wrap; }
+.chart-legend { display: flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; }
 .legend-item  { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-near-black); white-space: nowrap; }
 .legend-item i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
 .legend-item i.line-dash { height: 2px; border-radius: 1px; width: 14px; }

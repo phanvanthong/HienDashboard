@@ -16,8 +16,10 @@
     <!-- Row 2: Orders by category (50%) + SAT/IELTS (25%) + Revenue by source (25%) -->
     <div class="row-mid">
       <OrdersByCategoryChart :revByCategory="revByCategory" />
-      <SatIeltsOrdersChart   :satIeltsOrders="satIeltsOrders" />
-      <RevenueBySourceChart  :revBySource="revBySource" />
+      <div class="donut-pair-mid">
+        <SatIeltsOrdersChart   :satIeltsOrders="satIeltsOrders" />
+        <RevenueBySourceChart  :revBySource="revBySource" />
+      </div>
     </div>
 
     <!-- Row 3: Team/CN bar + Sale ranking -->
@@ -83,7 +85,13 @@ watch(() => filtered.value.length, n => emit('update:count', n), { immediate: tr
 /* Row 2: OrdersByCategory (50%) + SAT/IELTS (25%) + BySource (25%) */
 .row-mid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  /* grid-template-columns: 2fr 1fr 1fr; */
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.donut-pair-mid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
