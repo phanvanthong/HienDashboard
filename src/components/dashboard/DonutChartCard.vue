@@ -110,7 +110,7 @@ const chartOptions = computed(() => ({
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .chart-card-header {

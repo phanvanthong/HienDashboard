@@ -44,7 +44,7 @@ defineProps({
   padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
 }
 
 .chart-card-header {
