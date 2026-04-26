@@ -68,12 +68,13 @@ export function useRevenueData(fromRef, toRef) {
     const TYPES = ['Đăng ký mới', 'Hoàn thiện']
     const map = {}
     LOAI_HINH.forEach((l) => {
-      map[l] = { 'Đăng ký mới': 0, 'Hoàn thiện': 0, count_dkm: 0, count_ht: 0 }
+      map[l] = { 'Đăng ký mới': 0, 'Hoàn thiện': 0, count_dkm: 0, count_ht: 0, dtThucTe: 0 }
     })
     filtered.value.forEach((r) => {
       const l = normalizeLoai(r.loaiHinh)
       if (!l) return
       if (TYPES.includes(r.phanLoaiHS)) map[l][r.phanLoaiHS] += r.dtThucTe || 0
+      map[l].dtThucTe += r.dtThucTe || 0
       if (r.phanLoai === 'Đăng ký mới') map[l].count_dkm++
       else if (r.phanLoai === 'Hoàn thiện') map[l].count_ht++
     })
@@ -138,8 +139,8 @@ export function useRevenueData(fromRef, toRef) {
   // SAT / IELTS order counts (loaiHinh=KH, chiTietMonHoc=SAT|IELTS, grouped by phanLoai)
   const satIeltsOrders = computed(() => {
     const result = {
-      SAT:   { dkm: 0, ht: 0 },
-      IELTS: { dkm: 0, ht: 0 },
+      SAT:   { dkm: 0, ht: 0, dtThucTe: 0 },
+      IELTS: { dkm: 0, ht: 0, dtThucTe: 0 },
     }
     filtered.value.forEach((r) => {
       if (r.loaiHinh !== 'KH') return
@@ -147,6 +148,7 @@ export function useRevenueData(fromRef, toRef) {
       if (mon !== 'SAT' && mon !== 'IELTS') return
       if (r.phanLoai === 'Đăng ký mới') result[mon].dkm++
       else if (r.phanLoai === 'Hoàn thiện') result[mon].ht++
+      result[mon].dtThucTe += r.dtThucTe || 0
     })
     return result
   })

@@ -15,7 +15,10 @@ export const stackTotalPlugin = {
     const fmt = opt.formatter || fmtVND
 
     for (let i = 0; i < nBars; i++) {
-      const total = datasets.reduce((sum, ds) => sum + (Number(ds.data[i]) || 0), 0)
+      const total = datasets.reduce((sum, ds, di) => {
+        if (chart.getDatasetMeta(di).type === 'line') return sum
+        return sum + (Number(ds.data[i]) || 0)
+      }, 0)
       if (!total) continue
 
       // Find y-position of the top of the topmost visible bar segment
@@ -23,7 +26,7 @@ export const stackTotalPlugin = {
       let barX = null
       for (let di = datasets.length - 1; di >= 0; di--) {
         const meta = chart.getDatasetMeta(di)
-        if (meta.hidden) continue
+        if (meta.hidden || meta.type === 'line') continue
         const el = meta.data[i]
         if (el) {
           topY = el.y

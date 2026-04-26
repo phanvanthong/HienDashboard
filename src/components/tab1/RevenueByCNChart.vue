@@ -4,6 +4,9 @@
     <div class="donut-layout">
       <div class="donut-wrap">
         <Doughnut :data="chartData" :options="chartOptions" />
+        <div class="donut-center">
+          <span class="donut-total">{{ fmtShort(totalSum) }}</span>
+        </div>
       </div>
       <div class="legend">
         <div v-for="(item, i) in legendItems" :key="i" class="legend-row">
@@ -68,7 +71,9 @@ const chartOptions = computed(() => ({
 
 <style scoped>
 .donut-layout { display: flex; align-items: center; gap: 16px; height: 100%; }
-.donut-wrap   { width: 130px; height: 130px; flex-shrink: 0; }
+.donut-wrap   { position: relative; width: 130px; height: 130px; flex-shrink: 0; }
+.donut-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.donut-total  { font-size: 11px; font-weight: 700; color: var(--color-near-black); text-align: center; line-height: 1.2; }
 .legend       { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
 .legend-row   { display: flex; align-items: center; gap: 6px; font-size: 11.5px; }
 .dot          { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }

@@ -3,7 +3,10 @@
   <ChartCard title="Doanh thu từng loại hình" subtitle="Doanh thu: DT sau quà tặng, Loại hình" :height="230">
     <div class="donut-layout">
       <div class="donut-wrap">
-        <Doughnut :data="chartData" :options="chartOptions" :plugins="[centerPlugin]" />
+        <Doughnut :data="chartData" :options="chartOptions" />
+        <div class="donut-center">
+          <span class="donut-total">{{ fmtShort(totalSum) }}</span>
+        </div>
       </div>
       <div class="legend">
         <div v-for="(item, i) in legendItems" :key="i" class="legend-row">
@@ -25,23 +28,6 @@ import { fmtVND, fmtShort } from '../../utils/formatters.js'
 
 const props = defineProps({ totalRevenue: Object })
 
-const centerPlugin = {
-  id: 'centerText2',
-  afterDraw(chart) {
-    const opt = chart.config.options?.plugins?.centerText
-    if (!opt?.text) return
-    const { ctx, chartArea } = chart
-    const cx = (chartArea.left + chartArea.right) / 2
-    const cy = (chartArea.top + chartArea.bottom) / 2
-    ctx.save()
-    ctx.font = '700 13px Inter, sans-serif'
-    ctx.fillStyle = '#1d1d1f'
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText('100%', cx, cy)
-    ctx.restore()
-  },
-}
 
 const totalSum = computed(() =>
   LOAI_HINH.reduce((s, l) => s + (props.totalRevenue?.[l]?.dtSauQua || 0), 0)
@@ -73,7 +59,6 @@ const chartOptions = computed(() => ({
   plugins: {
     legend: { display: false },
     datalabels: { display: false },
-    centerText: { text: '100%' },
     tooltip: {
       backgroundColor: 'rgba(255,255,255,0.96)', titleColor: '#1d1d1f', bodyColor: '#6e6e73',
       borderColor: '#d2d2d7', borderWidth: 1, padding: 10, cornerRadius: 8,
@@ -90,7 +75,9 @@ const chartOptions = computed(() => ({
 
 <style scoped>
 .donut-layout { display: flex; align-items: center; gap: 16px; height: 100%; }
-.donut-wrap   { width: 130px; height: 130px; flex-shrink: 0; }
+.donut-wrap   { position: relative; width: 130px; height: 130px; flex-shrink: 0; }
+.donut-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.donut-total  { font-size: 11px; font-weight: 700; color: var(--color-near-black); text-align: center; line-height: 1.2; }
 .legend       { flex: 1; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; }
 .legend-row   { display: flex; align-items: center; gap: 6px; font-size: 11.5px; }
 .dot          { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }

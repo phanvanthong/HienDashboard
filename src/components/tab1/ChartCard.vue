@@ -55,6 +55,11 @@ defineProps({
   min-height: 44px;
 }
 
+.chart-card-header.column {
+  flex-direction: column;
+  gap: 8px;
+}
+
 .chart-card-header > div:first-child {
   flex-shrink: 0;
 }
