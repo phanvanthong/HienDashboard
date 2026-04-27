@@ -206,10 +206,6 @@ import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { parseExcel } from '../../utils/excelParser.js'
 import { revenueData } from '../../store/dataStore.js'
 
-const LS_SOURCE   = 'hd_data_source'
-const LS_URL      = 'hd_gdrive_url'
-const LS_INTERVAL = 'hd_refresh_interval'
-
 const INTERVAL_OPTIONS = [
   { value: 0,    label: 'Tắt' },
   { value: 60,   label: '1 phút' },
@@ -228,10 +224,10 @@ const successMsg   = ref('')
 const errorData    = reactive({ missing: [] })
 const lastUpdated  = ref(localStorage.getItem('hd_last_updated') || '')
 
-// Persistent settings
-const dataSource     = ref(localStorage.getItem(LS_SOURCE)   || 'file')
-const gdriveUrl      = ref(localStorage.getItem(LS_URL)      || '')
-const refreshInterval = ref(parseInt(localStorage.getItem(LS_INTERVAL) || '0'))
+// Settings — loaded from server on mount
+const dataSource      = ref('file')
+const gdriveUrl       = ref('')
+const refreshInterval = ref(0)
 
 // Settings modal drafts
 const showSettings  = ref(false)
@@ -257,7 +253,29 @@ function stopPolling() {
   if (pollTimer) { clearInterval(pollTimer); pollTimer = null }
 }
 
-onMounted(() => {
+async function loadSettings() {
+  try {
+    const res = await fetch('/api/settings')
+    if (!res.ok) return
+    const s = await res.json()
+    dataSource.value      = s.source   || 'file'
+    gdriveUrl.value       = s.url      || ''
+    refreshInterval.value = s.interval || 0
+  } catch { /* keep defaults */ }
+}
+
+async function persistSettings() {
+  try {
+    await fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source: dataSource.value, url: gdriveUrl.value, interval: refreshInterval.value }),
+    })
+  } catch { /* ignore */ }
+}
+
+onMounted(async () => {
+  await loadSettings()
   startPolling()
 })
 
@@ -283,12 +301,9 @@ function saveSettings() {
   dataSource.value      = draftSource.value
   gdriveUrl.value       = draftUrl.value.trim()
   refreshInterval.value = draftInterval.value
-  localStorage.setItem(LS_SOURCE,   dataSource.value)
-  localStorage.setItem(LS_URL,      gdriveUrl.value)
-  localStorage.setItem(LS_INTERVAL, String(refreshInterval.value))
+  persistSettings()
   showSettings.value = false
   startPolling()
-  // Immediate load when switching to gdrive or saving new URL
   if (dataSource.value === 'gdrive' && gdriveUrl.value) loadFromGDrive(true)
 }
 

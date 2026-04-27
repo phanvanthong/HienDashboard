@@ -4,7 +4,8 @@ import { writeFileSync, readFileSync, existsSync, unlinkSync } from 'fs'
 import { resolve } from 'path'
 import { createSign } from 'crypto'
 
-const SA_PATH = resolve(process.cwd(), 'Hien-AS.service-account.json')
+const SA_PATH       = resolve(process.cwd(), 'Hien-AS.service-account.json')
+const SETTINGS_PATH = resolve(process.cwd(), 'public/settings.json')
 
 // In-memory token cache
 let tokenCache = { token: null, exp: 0 }
@@ -54,6 +55,34 @@ function saveRevenuePlugin() {
   return {
     name: 'save-revenue-data',
     configureServer(server) {
+
+      // Settings: GET reads public/settings.json, POST writes it
+      server.middlewares.use('/api/settings', async (req, res) => {
+        res.setHeader('Content-Type', 'application/json')
+        const defaults = { source: 'file', url: '', interval: 0 }
+
+        if (req.method === 'GET') {
+          try {
+            res.end(existsSync(SETTINGS_PATH) ? readFileSync(SETTINGS_PATH, 'utf-8') : JSON.stringify(defaults))
+          } catch { res.end(JSON.stringify(defaults)) }
+          return
+        }
+
+        if (req.method === 'POST') {
+          try {
+            const body = await readBody(req)
+            JSON.parse(body) // validate JSON
+            writeFileSync(SETTINGS_PATH, body, 'utf-8')
+            res.end(JSON.stringify({ ok: true }))
+          } catch (e) {
+            res.statusCode = 500
+            res.end(JSON.stringify({ error: e.message }))
+          }
+          return
+        }
+
+        res.statusCode = 405; res.end()
+      })
 
       // Check if service account is configured
       server.middlewares.use('/api/service-account', async (req, res) => {
