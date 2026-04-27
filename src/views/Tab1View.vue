@@ -6,6 +6,7 @@
         :totalDtThucTe="totalDtThucTe"
         :totalRevenue="totalRevenue"
         :revByCategory="revByCategory"
+        :totalSaleCount="totalSaleCount"
       />
       <div class="donut-pair">
         <RevenueRatioChart :totalRevenue="totalRevenue" />
@@ -49,7 +50,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:count'])
 
-const { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource, satIeltsOrders } =
+const { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource, satIeltsOrders, totalSaleCount } =
   useRevenueData(toRef(props, 'appliedFrom'), toRef(props, 'appliedTo'))
 
 watch(() => filtered.value.length, n => emit('update:count', n), { immediate: true })

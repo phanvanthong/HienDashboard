@@ -105,9 +105,13 @@ export function useRevenueData(fromRef, toRef) {
     const map = {}
     filtered.value.forEach((r) => {
       const key = r.cn || 'N/A'
-      map[key] = (map[key] || 0) + (r.dtThucTe || 0)
+      if (!map[key]) map[key] = { dtThucTe: 0, sales: new Set() }
+      map[key].dtThucTe += r.dtThucTe || 0
+      if (r.sale) map[key].sales.add(r.sale)
     })
-    return Object.entries(map).sort((a, b) => b[1] - a[1])
+    return Object.entries(map)
+      .map(([cn, v]) => ({ cn, dtThucTe: v.dtThucTe, saleCount: v.sales.size }))
+      .sort((a, b) => b.dtThucTe - a.dtThucTe)
   })
 
   // Total dtThucTe across all records
@@ -286,5 +290,9 @@ export function useRevenueData(fromRef, toRef) {
     })
   })
 
-  return { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource, satIeltsOrders, saleAnalysis, activeSalesByMonth, byMonth }
+  const totalSaleCount = computed(() =>
+    new Set(filtered.value.filter(r => r.sale).map(r => r.sale)).size
+  )
+
+  return { filtered, totalRevenue, totalDtThucTe, revByCategory, revByTeam, revByCN, revByCNDtThucTe, saleRanking, revBySource, satIeltsOrders, saleAnalysis, activeSalesByMonth, byMonth, totalSaleCount }
 }

@@ -65,8 +65,14 @@ export function useExternalTooltip({ formatValue = fmtVND, colorKey = 'auto', sh
     const caretY = rect.top  + tooltip.caretY
 
     el.style.opacity = '1'
-    el.style.top = Math.max(8, caretY - 16) + 'px'
     const elW = el.offsetWidth || 220
+    const elH = el.offsetHeight || 160
+    // Vertical: center on caret, clamp within viewport
+    let top = caretY - elH / 2
+    if (top + elH > window.innerHeight - 8) top = window.innerHeight - elH - 8
+    if (top < 8) top = 8
+    el.style.top = top + 'px'
+    // Horizontal: prefer right of caret, flip left if no room
     el.style.left = caretX + elW + 16 > window.innerWidth
       ? (caretX - elW - 12) + 'px'
       : (caretX + 12) + 'px'

@@ -3,10 +3,7 @@
   <ChartCard title="Doanh thu từng loại hình" subtitle="Doanh thu: DT sau quà tặng, Loại hình" :height="230">
     <div class="donut-layout">
       <div class="donut-wrap">
-        <Doughnut :data="chartData" :options="chartOptions" />
-        <div class="donut-center">
-          <span class="donut-total">{{ fmtShort(totalSum) }}</span>
-        </div>
+        <Doughnut :data="chartData" :options="chartOptions" :plugins="[centerTextPlugin]" />
       </div>
       <div class="legend">
         <div v-for="(item, i) in legendItems" :key="i" class="legend-row">
@@ -52,6 +49,23 @@ const chartData = computed(() => ({
   }],
 }))
 
+const centerTextPlugin = {
+  id: 'centerText',
+  afterDatasetsDraw(chart) {
+    const { ctx, chartArea } = chart
+    if (!chartArea) return
+    const cx = (chartArea.left + chartArea.right) / 2
+    const cy = (chartArea.top + chartArea.bottom) / 2
+    ctx.save()
+    ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif'
+    ctx.fillStyle = '#1d1d1f'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText(fmtShort(totalSum.value), cx, cy)
+    ctx.restore()
+  }
+}
+
 const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
@@ -76,8 +90,6 @@ const chartOptions = computed(() => ({
 <style scoped>
 .donut-layout { display: flex; align-items: center; gap: 16px; height: 100%; }
 .donut-wrap   { position: relative; width: 130px; height: 130px; flex-shrink: 0; }
-.donut-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
-.donut-total  { font-size: 11px; font-weight: 700; color: var(--color-near-black); text-align: center; line-height: 1.2; }
 .legend       { flex: 1; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; }
 .legend-row   { display: flex; align-items: center; gap: 6px; font-size: 11.5px; }
 .dot          { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }

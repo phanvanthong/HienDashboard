@@ -19,8 +19,8 @@
       <div class="header-right">
         <ImportExcelButton />
 
-        <!-- Date filter — shown for Tab1 and Tab2 -->
-        <div v-if="activeTab === 'tab1' || activeTab === 'tab2'" class="header-filter">
+        <!-- Date filter — shown for all tabs -->
+        <div v-if="activeTab !== ''" class="header-filter">
         <span class="filter-label">Khoảng thời gian:</span>
         <div class="filter-group">
           <label class="filter-lbl">Từ tháng</label>
@@ -65,9 +65,9 @@ import Tab2View from './Tab2View.vue'
 import ImportExcelButton from '../components/common/ImportExcelButton.vue'
 
 const tabs = [
-  { id: 'tab1', label: 'Tab1' },
-  { id: 'tab2', label: 'Tab2' },
-  { id: 'tab3', label: 'Tab3' },
+  { id: 'tab1', label: 'Tổng quan' },
+  { id: 'tab2', label: 'Xu hướng' },
+  { id: 'tab3', label: 'So sánh' },
 ]
 const activeTab   = ref('tab1')
 const recordCount = ref(0)
