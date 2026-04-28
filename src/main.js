@@ -34,4 +34,6 @@ ChartJS.register(
 // Disable datalabels globally; enable per-chart as needed
 ChartJS.defaults.plugins.datalabels.display = false
 
+window.__BUILD_TIME__ = __BUILD_TIME__
+
 createApp(App).mount('#app')

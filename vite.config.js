@@ -197,4 +197,7 @@ function saveRevenuePlugin() {
 
 export default defineConfig({
   plugins: [vue(), saveRevenuePlugin()],
+  define: {
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+  },
 })
