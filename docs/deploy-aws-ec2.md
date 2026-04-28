@@ -112,8 +112,8 @@ Xong. Tiếp tục phần 6 để upload Google Drive key.
 Trong DNS Manager của nhà cung cấp domain, thêm 2 record:
 
 ```
-A    yourdomain.com      15.134.34.133
-A    www.yourdomain.com  15.134.34.133
+A    pzz.io.vn      15.134.34.133
+A    www.pzz.io.vn  15.134.34.133
 ```
 
 Chờ ~5–15 phút cho DNS propagate.
@@ -132,12 +132,12 @@ Tạo file config:
 sudo nano /etc/nginx/conf.d/hien-dashboard.conf
 ```
 
-Paste nội dung sau (thay `yourdomain.com`):
+Paste nội dung sau:
 
 ```nginx
 server {
     listen 80;
-    server_name yourdomain.com www.yourdomain.com;
+    server_name pzz.io.vn www.pzz.io.vn;
 
     location / {
         proxy_pass http://localhost:3000;
@@ -162,7 +162,7 @@ sudo systemctl reload nginx
 ```bash
 sudo yum install -y python3-certbot-nginx
 
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+sudo certbot --nginx -d pzz.io.vn -d www.pzz.io.vn
 ```
 
 Certbot tự sửa config Nginx sang HTTPS và cài cron job gia hạn tự động (90 ngày/lần).
@@ -173,7 +173,7 @@ Kiểm tra gia hạn:
 sudo certbot renew --dry-run
 ```
 
-Kết quả: `https://yourdomain.com` → HienDashboard qua SSL.
+Kết quả: `https://pzz.io.vn` → HienDashboard qua SSL.
 
 ---
 
