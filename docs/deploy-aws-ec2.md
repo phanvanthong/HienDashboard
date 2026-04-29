@@ -109,11 +109,13 @@ Xong. Tiếp tục phần 6 để upload Google Drive key.
 
 ### Phần 5.1 — Trỏ domain về EC2
 
-Trong DNS Manager của nhà cung cấp domain, thêm 2 record:
+Trong DNS Manager của nhà cung cấp domain, thêm các record sau (cho từng domain):
 
 ```
-A    pzz.io.vn      15.134.34.133
-A    www.pzz.io.vn  15.134.34.133
+A    pzz.io.vn         15.134.34.133
+A    www.pzz.io.vn     15.134.34.133
+A    hienas.io.vn      15.134.34.133
+A    www.hienas.io.vn  15.134.34.133
 ```
 
 Chờ ~5–15 phút cho DNS propagate.
@@ -137,7 +139,7 @@ Paste nội dung sau:
 ```nginx
 server {
     listen 80;
-    server_name pzz.io.vn www.pzz.io.vn;
+    server_name pzz.io.vn www.pzz.io.vn hienas.io.vn www.hienas.io.vn;
 
     location / {
         proxy_pass http://localhost:3000;
@@ -162,7 +164,7 @@ sudo systemctl reload nginx
 ```bash
 sudo yum install -y python3-certbot-nginx
 
-sudo certbot --nginx -d pzz.io.vn -d www.pzz.io.vn
+sudo certbot --nginx -d pzz.io.vn -d www.pzz.io.vn -d hienas.io.vn -d www.hienas.io.vn
 ```
 
 Certbot tự sửa config Nginx sang HTTPS và cài cron job gia hạn tự động (90 ngày/lần).
@@ -173,7 +175,7 @@ Kiểm tra gia hạn:
 sudo certbot renew --dry-run
 ```
 
-Kết quả: `https://pzz.io.vn` → HienDashboard qua SSL.
+Kết quả: `https://pzz.io.vn` và `https://hienas.io.vn` → HienDashboard qua SSL.
 
 ---
 

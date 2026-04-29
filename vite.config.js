@@ -6,6 +6,16 @@ import { createSign } from 'crypto'
 
 const SA_PATH       = resolve(process.cwd(), 'Hien-AS.service-account.json')
 const SETTINGS_PATH = resolve(process.cwd(), 'public/settings.json')
+const USERS_PATH    = resolve(process.cwd(), 'public/users.json')
+
+function readUsers() {
+  if (!existsSync(USERS_PATH)) return []
+  try { return JSON.parse(readFileSync(USERS_PATH, 'utf-8')) } catch { return [] }
+}
+
+function writeUsers(users) {
+  writeFileSync(USERS_PATH, JSON.stringify(users, null, 2), 'utf-8')
+}
 
 // In-memory token cache
 let tokenCache = { token: null, exp: 0 }
@@ -171,6 +181,110 @@ function saveRevenuePlugin() {
           res.setHeader('Content-Type', 'application/json')
           res.end(JSON.stringify({ error: e.message }))
         }
+      })
+
+      // POST /api/auth/login
+      server.middlewares.use('/api/auth', async (req, res) => {
+        res.setHeader('Content-Type', 'application/json')
+        if (req.method !== 'POST') { res.statusCode = 405; res.end(); return }
+        try {
+          const { username, password } = JSON.parse(await readBody(req))
+          const users = readUsers()
+          const user = users.find(u => u.username === username && u.password === password)
+          if (!user) {
+            res.statusCode = 401
+            res.end(JSON.stringify({ error: 'Tên đăng nhập hoặc mật khẩu không đúng' }))
+            return
+          }
+          res.end(JSON.stringify(user))
+        } catch (e) {
+          res.statusCode = 400
+          res.end(JSON.stringify({ error: e.message }))
+        }
+      })
+
+      // CRUD /api/users
+      server.middlewares.use('/api/users', async (req, res) => {
+        res.setHeader('Content-Type', 'application/json')
+        const urlPath = (req.url || '/').split('?')[0]
+        const relativePath = urlPath.replace(/^\/api\/users/, '') || '/'
+        const idMatch = relativePath.match(/^\/([^/]+)$/)
+        const userId = idMatch ? idMatch[1] : null
+
+        if (req.method === 'GET' && !userId) {
+          res.end(JSON.stringify(readUsers()))
+          return
+        }
+
+        if (req.method === 'POST' && !userId) {
+          try {
+            const body = JSON.parse(await readBody(req))
+            if (!body.username || !body.password || !body.displayName) throw new Error('Thiếu thông tin bắt buộc')
+            const users = readUsers()
+            if (users.find(u => u.username === body.username)) throw new Error('Tên đăng nhập đã tồn tại')
+            const newUser = {
+              id: Date.now().toString(),
+              username: body.username,
+              password: body.password,
+              role: body.role || 'viewer',
+              isAdmin: body.isAdmin === true,
+              displayName: body.displayName,
+              createdAt: new Date().toISOString(),
+            }
+            users.push(newUser)
+            writeUsers(users)
+            res.end(JSON.stringify(newUser))
+          } catch (e) {
+            res.statusCode = 400
+            res.end(JSON.stringify({ error: e.message }))
+          }
+          return
+        }
+
+        if (req.method === 'PUT' && userId) {
+          try {
+            const body = JSON.parse(await readBody(req))
+            const users = readUsers()
+            const idx = users.findIndex(u => u.id === userId)
+            if (idx === -1) { res.statusCode = 404; res.end(JSON.stringify({ error: 'Không tìm thấy' })); return }
+            if (body.displayName) users[idx].displayName = body.displayName
+            if (body.role) users[idx].role = body.role
+            if (body.isAdmin !== undefined) users[idx].isAdmin = body.isAdmin === true
+            if (body.avatarColor !== undefined) users[idx].avatarColor = body.avatarColor
+            if ('avatarImage' in body) users[idx].avatarImage = body.avatarImage
+            if (body.password) {
+              if (body.oldPassword !== undefined && users[idx].password !== body.oldPassword) {
+                res.statusCode = 400
+                res.end(JSON.stringify({ error: 'Mật khẩu hiện tại không đúng' }))
+                return
+              }
+              users[idx].password = body.password
+            }
+            writeUsers(users)
+            res.end(JSON.stringify(users[idx]))
+          } catch (e) {
+            res.statusCode = 400
+            res.end(JSON.stringify({ error: e.message }))
+          }
+          return
+        }
+
+        if (req.method === 'DELETE' && userId) {
+          try {
+            const users = readUsers()
+            const idx = users.findIndex(u => u.id === userId)
+            if (idx === -1) { res.statusCode = 404; res.end(JSON.stringify({ error: 'Không tìm thấy' })); return }
+            users.splice(idx, 1)
+            writeUsers(users)
+            res.end(JSON.stringify({ ok: true }))
+          } catch (e) {
+            res.statusCode = 400
+            res.end(JSON.stringify({ error: e.message }))
+          }
+          return
+        }
+
+        res.statusCode = 405; res.end()
       })
 
       server.middlewares.use('/api/save-revenue', (req, res) => {
