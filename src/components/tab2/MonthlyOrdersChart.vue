@@ -3,12 +3,7 @@
   <ChartCard title="Số lượng đơn hàng" subtitle="Số đơn hàng: Theo đăng ký mới và hoàn thiện" :total="`${grandTotal} đơn`">
     <template #control>
       <div class="control-group">
-        <div class="chart-legend">
-          <span v-for="ds in ALL_DS" :key="ds.key" class="legend-item">
-            <i :style="{ background: ds.color }"></i>{{ ds.label }}
-            <span class="legend-total">{{ dsTotals[ds.key] }} đơn</span>
-          </span>
-        </div>
+        <ChartLegend :items="legendItems" />
         <MultiSelect :options="options" v-model="selected" />
       </div>
     </template>
@@ -21,6 +16,7 @@ import { ref, computed } from 'vue'
 import { Bar } from 'vue-chartjs'
 import ChartCard from '../tab1/ChartCard.vue'
 import MultiSelect from '../common/MultiSelect.vue'
+import ChartLegend from '../common/ChartLegend.vue'
 import { stackTotalPlugin } from '../../plugins/stackTotalPlugin.js'
 
 const props = defineProps({ byMonth: Array })
@@ -41,6 +37,15 @@ const dsTotals = computed(() => {
   }
 })
 const grandTotal = computed(() => dsTotals.value.donDkm + dsTotals.value.donHt)
+
+const legendItems = computed(() =>
+  ALL_DS.map(ds => ({
+    label: ds.label,
+    color: ds.color,
+    value: `${dsTotals.value[ds.key]} đơn`,
+    shape: 'square',
+  }))
+)
 
 const chartData = computed(() => ({
   labels: (props.byMonth || []).map(d => d.label),
@@ -91,8 +96,4 @@ const chartOptions = computed(() => ({
 
 <style scoped>
 .control-group { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.chart-legend  { display: flex; align-items: center; gap: 12px; }
-.legend-item   { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-near-black); white-space: nowrap; }
-.legend-item i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-.legend-total  { font-size: 11px; color: var(--color-secondary-gray); }
 </style>

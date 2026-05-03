@@ -3,11 +3,8 @@
   <ChartCard title="Số lượng đơn hàng" subtitle="Số đơn hàng: Theo loại hình" :total="`${grandTotal} đơn`">
     <template #control>
       <div class="control-group">
-        <div class="chart-legend">
-          <span v-for="l in activeLoai" :key="l" class="legend-item">
-            <i :style="{ background: LOAI_COLORS[l] }"></i>{{ LOAI_LABEL[l] }}
-            <span class="legend-total">{{ loaiTotals[l] }} đơn</span>
-          </span>
+        <div class="legend-wrap">
+          <ChartLegend :items="legendItems" />
         </div>
         <MultiSelect :options="options" v-model="selected" />
       </div>
@@ -21,6 +18,7 @@ import { ref, computed, watch } from 'vue'
 import { Bar } from 'vue-chartjs'
 import ChartCard from '../tab1/ChartCard.vue'
 import MultiSelect from '../common/MultiSelect.vue'
+import ChartLegend from '../common/ChartLegend.vue'
 import { stackTotalPlugin } from '../../plugins/stackTotalPlugin.js'
 import { LOAI_HINH, LOAI_LABEL, LOAI_COLORS } from '../../composables/useRevenueData.js'
 import { useExternalTooltip } from '../../composables/useExternalTooltip.js'
@@ -52,6 +50,14 @@ const activeLoai = computed(() =>
 const selected = ref([...LOAI_HINH])
 watch(activeLoai, val => { selected.value = [...val] }, { immediate: true })
 const grandTotal = computed(() => Object.values(loaiTotals.value).reduce((s, v) => s + v, 0))
+
+const legendItems = computed(() =>
+  activeLoai.value.map(l => ({
+    label: LOAI_LABEL[l],
+    color: LOAI_COLORS[l],
+    value: `${loaiTotals.value[l]} đơn`,
+  }))
+)
 
 const chartData = computed(() => ({
   labels: (props.byMonth || []).map(d => d.label),
@@ -89,8 +95,5 @@ const chartOptions = computed(() => ({
 
 <style scoped>
 .control-group { display: flex; align-items: flex-start; gap: 10px; }
-.chart-legend  { display: grid; grid-template-columns: repeat(4, max-content); align-items: center; gap: 6px 16px; flex: 1; }
-.legend-item   { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--color-near-black); white-space: nowrap; }
-.legend-item i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.legend-total  { font-size: 10px; color: var(--color-secondary-gray); }
+.legend-wrap   { flex: 1; min-width: 0; overflow: hidden; }
 </style>

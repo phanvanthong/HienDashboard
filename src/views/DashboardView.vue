@@ -44,15 +44,16 @@
     </div>
 
     <!-- Tab content -->
-    <Tab1View v-if="activeTab === 'tab1'" :appliedFrom="appliedFrom" :appliedTo="appliedTo" @update:count="recordCount = $event" />
-    <Tab2View v-else-if="activeTab === 'tab2'" :appliedFrom="appliedFrom" :appliedTo="appliedTo" @update:count="recordCount = $event" />
-
-    <div v-else class="tab-placeholder">
-      <div class="placeholder-inner">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="ph-icon">
-          <path d="M9 17v-2m3 2v-4m3 4v-6M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <p>{{ tabs.find(t => t.id === activeTab)?.label }} — Đang phát triển</p>
+    <div class="tab-wrap">
+      <Tab1View v-if="activeTab === 'tab1'" :appliedFrom="appliedFrom" :appliedTo="appliedTo" @update:count="recordCount = $event" />
+      <Tab2View v-else-if="activeTab === 'tab2'" :appliedFrom="appliedFrom" :appliedTo="appliedTo" @update:count="recordCount = $event" />
+      <div v-else class="tab-placeholder">
+        <div class="placeholder-inner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="ph-icon">
+            <path d="M9 17v-2m3 2v-4m3 4v-6M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>{{ tabs.find(t => t.id === activeTab)?.label }} — Đang phát triển</p>
+        </div>
       </div>
     </div>
   </div>
@@ -93,7 +94,17 @@ function applyFilter() {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  min-height: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.page-header { flex-shrink: 0; }
+
+.tab-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Header */
@@ -240,7 +251,7 @@ function applyFilter() {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  height: 100%;
   background: var(--color-white);
   border: 1px solid var(--color-soft-border);
   border-radius: var(--radius-lg);

@@ -61,61 +61,59 @@ watch(() => filtered.value.length, n => emit('update:count', n), { immediate: tr
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 100%;
+  overflow: hidden;
 }
 
-/* Row 1: equal halves */
-.row-1 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  min-height: calc(33vh - 40px);
-}
-
-/* Right half of row 1: 2 donuts side by side */
-.donut-pair {
+/* Each row takes equal 1/3 of available height */
+.row-1, .row-mid, .row-bot {
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.donut-pair :deep(.chart-body) {
-  height: calc(33vh - 140px) !important;
-  min-height: 120px !important;
-}
-
-/* Row 2: OrdersByCategory (50%) + SAT/IELTS (25%) + BySource (25%) */
-.row-mid {
-  display: grid;
-  /* grid-template-columns: 2fr 1fr 1fr; */
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.donut-pair-mid {
+/* Nested grids */
+.donut-pair, .donut-pair-mid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
+  min-height: 0;
 }
 
-.row-mid :deep(.chart-body) {
-  height: calc(33vh - 140px) !important;
-  min-height: 120px !important;
+/* Fix: prevent min-content from breaking 1fr equality */
+.row-1 > *, .row-mid > *, .row-bot > * { min-width: 0; }
+.donut-pair > *, .donut-pair-mid > * { min-width: 0; }
+
+/* Chart cards fill their grid cell */
+:deep(.chart-card) { height: 100%; min-height: 0; overflow: hidden; }
+:deep(.kpi-card)   { overflow: hidden; }
+:deep(.chart-card-header) { flex-shrink: 0; }
+
+/* Rows 1 & 2: chart-body (direct child of chart-card, no chart-scroll wrapper) fills remaining height */
+.row-1 :deep(.chart-card > .chart-body),
+.row-mid :deep(.chart-card > .chart-body) {
+  flex: 1 !important;
+  height: auto !important;
+  min-height: 60px;
 }
 
-/* Row 3 */
-.row-bot {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
+/* Row 3: RevenueByTeamChart — chart-scroll fills card; chart-body keeps inline pixel height → scrolls when overflowing */
 .row-bot :deep(.chart-scroll) {
-  max-height: calc(33vh - 140px) !important;
-  min-height: 110px !important;
+  flex: 1;
+  max-height: none !important;
+  min-height: 0;
+  overflow-y: auto;
 }
 
-.row-bot :deep(.table-wrap) {
-  max-height: calc(33vh - 100px);
-  min-height: 110px;
+/* Row 3: sale ranking table fills card */
+:deep(.table-card) { height: 100%; min-height: 0; overflow: hidden; }
+:deep(.table-wrap) {
+  flex: 1;
+  max-height: none !important;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 @media (max-width: 1100px) {
@@ -124,7 +122,14 @@ watch(() => filtered.value.length, n => emit('update:count', n), { immediate: tr
 }
 
 @media (max-width: 800px) {
-  .row-1, .row-mid, .row-bot { grid-template-columns: 1fr; }
-  .donut-pair { grid-template-columns: 1fr; }
+  .tab1 { height: auto; overflow: visible; }
+  .row-1, .row-mid, .row-bot {
+    flex: none;
+    grid-template-columns: 1fr;
+    min-height: 320px;
+  }
+  .donut-pair, .donut-pair-mid { grid-template-columns: 1fr; }
+  .row-1 :deep(.chart-card > .chart-body),
+  .row-mid :deep(.chart-card > .chart-body) { min-height: 200px; }
 }
 </style>

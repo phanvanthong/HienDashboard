@@ -63,6 +63,9 @@ const rankClass = (i) => {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .chart-title {
@@ -81,7 +84,8 @@ const rankClass = (i) => {
 .table-wrap {
   overflow-x: auto;
   overflow-y: auto;
-  max-height: 420px;
+  flex: 1;
+  min-height: 0;
 }
 
 .rank-table {

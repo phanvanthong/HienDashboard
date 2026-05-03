@@ -11,7 +11,7 @@
       @profile="showProfile = true"
       @login="showLogin = true"
     />
-    <div class="app-main" :class="{ collapsed: sidebarCollapsed }">
+    <div class="app-main" :class="{ collapsed: sidebarCollapsed }" @transitionend="onSidebarTransitionEnd">
       <DashboardView v-if="activeView === 'dashboard'" />
       <AccountsView v-else-if="activeView === 'accounts' && currentUser" />
     </div>
@@ -34,6 +34,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { Chart as ChartJS } from 'chart.js'
 import AppSidebar from './components/AppSidebar.vue'
 import DashboardView from './views/DashboardView.vue'
 import AccountsView from './views/AccountsView.vue'
@@ -52,6 +53,12 @@ function handleLogout() {
   activeView.value = 'dashboard'
   showLogin.value = true
 }
+
+function onSidebarTransitionEnd(e) {
+  if (e.propertyName === 'margin-left') {
+    Object.values(ChartJS.instances).forEach(chart => chart.resize())
+  }
+}
 </script>
 
 <style scoped>
@@ -63,11 +70,13 @@ function handleLogout() {
 
 .app-main {
   flex: 1;
-  overflow-y: auto;
+  overflow: hidden;
   background: var(--color-pale-gray);
   margin-left: var(--sidebar-width);
   transition: margin-left 0.25s ease;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .app-main.collapsed {

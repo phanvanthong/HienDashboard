@@ -2,20 +2,7 @@
 <template>
   <ChartCard :title="title" :subtitle="subtitle" :total="`${grandTotal} đơn`">
     <template #control>
-      <div class="chart-legend">
-        <span class="legend-item">
-          <i style="background:#5b8def"></i>Đăng ký mới
-          <span class="legend-total">{{ totalDkm }} đơn</span>
-        </span>
-        <span class="legend-item">
-          <i style="background:#34c759"></i>Hoàn thiện
-          <span class="legend-total">{{ totalHt }} đơn</span>
-        </span>
-        <span class="legend-item">
-          <i class="line-dash" style="background:#ff9500"></i>DT thực tế
-          <span class="legend-total">{{ fmtShort(totalDtThucTe) }}</span>
-        </span>
-      </div>
+      <ChartLegend :items="legendItems" />
     </template>
     <Bar :data="chartData" :options="chartOptions" :plugins="[stackPlugin]" />
   </ChartCard>
@@ -25,6 +12,7 @@
 import { computed } from 'vue'
 import { Bar } from 'vue-chartjs'
 import ChartCard from './ChartCard.vue'
+import ChartLegend from '../common/ChartLegend.vue'
 import { stackTotalPlugin } from '../../plugins/stackTotalPlugin.js'
 import { LOAI_HINH, LOAI_LABEL } from '../../composables/useRevenueData.js'
 import { fmtVND, fmtShort } from '../../utils/formatters.js'
@@ -41,6 +29,12 @@ const totalDkm     = computed(() => LOAI_HINH.reduce((s, l) => s + (props.revByC
 const totalHt      = computed(() => LOAI_HINH.reduce((s, l) => s + (props.revByCategory?.[l]?.count_ht  || 0), 0))
 const grandTotal   = computed(() => totalDkm.value + totalHt.value)
 const totalDtThucTe = computed(() => LOAI_HINH.reduce((s, l) => s + (props.revByCategory?.[l]?.dtThucTe || 0), 0))
+
+const legendItems = computed(() => [
+  { label: 'Đăng ký mới', color: '#5b8def', value: `${totalDkm.value} đơn`,        shape: 'square' },
+  { label: 'Hoàn thiện',  color: '#34c759', value: `${totalHt.value} đơn`,          shape: 'square' },
+  { label: 'DT thực tế',  color: '#ff9500', value: fmtShort(totalDtThucTe.value),   shape: 'line'   },
+])
 
 const chartData = computed(() => {
   const dkm = LOAI_HINH.map((l) => props.revByCategory?.[l]?.count_dkm || 0)
@@ -142,10 +136,3 @@ const chartOptions = computed(() => ({
 }))
 </script>
 
-<style scoped>
-.chart-legend { display: flex; align-items: center; gap: 12px; flex-shrink: 0; flex-wrap: wrap; }
-.legend-item  { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--color-near-black); white-space: nowrap; }
-.legend-item i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-.legend-item i.line-dash { height: 2px; border-radius: 1px; width: 14px; }
-.legend-total { font-size: 11px; color: var(--color-secondary-gray); }
-</style>
